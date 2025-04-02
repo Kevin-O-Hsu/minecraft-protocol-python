@@ -1,4 +1,3 @@
-from .mc_varint_and_varlong import encode_varint, encode_varlong, decode_varint_with_size
 
 def encode_string(s: str) -> bytes:
     """

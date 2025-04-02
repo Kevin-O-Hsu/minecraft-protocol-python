@@ -1,5 +1,5 @@
-# Minecraft-Protocol-
-# Copyright (C) <year>  <name of author>
+# Minecraft-Protocol-Python
+# Copyright (C) 2025  GreshAnt
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

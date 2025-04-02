@@ -16,8 +16,8 @@ class FixedPoints(DataStruct):
         elif self.data_content is None:
             self.data_content = self.data_decode(self.bytes_content)
 
-    def data_encode(self, data_content:float) -> bytes:
-        scaled = int(round(data_content * (1 << 5)))  # 乘以 32
+    def data_encode(self, data:float) -> bytes:
+        scaled = int(round(data * (1 << 5)))  # 乘以 32
         if not -(1 << 31) <= scaled < (1 << 31):
             raise ValueError("Value out of range for 32-bit signed fixed-point")
         return scaled.to_bytes(4, byteorder='big', signed=True)
