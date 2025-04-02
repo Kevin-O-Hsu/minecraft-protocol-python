@@ -15,9 +15,9 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-from .datastruck import DataStruct
+from .datastruck import McDataStruct
 
-class VarInt(DataStruct):
+class McVarInt(McDataStruct):
     
     def __init__(self, *,  bytes_content:bytes = bytes(), data_content:int = None) -> None:
         # Ensure that at least one of bytes_content or data_content is provided
@@ -57,14 +57,14 @@ class VarInt(DataStruct):
             raise ValueError("VarInt is too big (more than 5 bytes)")
         return result
 
-    def decode_varint_with_size(self, data: bytes) -> tuple[int, int]:
+    def decode_varint_with_size(self) -> tuple[int, int]:
         """
         Decode a Minecraft-style VarInt from bytes and return (value, bytes_used).
         """
         num_read = 0
         result = 0
-        for i in range(min(5, len(data))):
-            byte = data[i]
+        for i in range(min(5, len(self.bytes_content))):
+            byte = self.bytes_content[i]
             result |= (byte & 0x7F) << (7 * i)
             num_read += 1
             if (byte & 0x80) == 0:

@@ -15,9 +15,9 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-from .datastruck import DataStruct
+from .datastruck import McDataStruct
 
-class VarLong(DataStruct):
+class McVarLong(McDataStruct):
     
     def __init__(self, *,  bytes_content:bytes = bytes(), data_content:int = None) -> None:
         # Ensure that at least one of bytes_content or data_content is provided

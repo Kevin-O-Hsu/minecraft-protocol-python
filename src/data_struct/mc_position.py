@@ -1,3 +1,7 @@
+
+
+
+
 def encode_position_bytes(x: int, y: int, z: int) -> bytes:
     """
     Encode (x, y, z) block position into 8-byte big-endian Position field (Minecraft format).
