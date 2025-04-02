@@ -30,7 +30,7 @@ class McString:
         if self.bytes_content == bytes():
             self.bytes_content = self.data_encode(self.data_content)
         elif self.data_content == str():
-            self.data_content = self.data_decode(self.bytes_content)
+            self.data_content = self.data_decode(self.bytes_content)[0]
     
     def data_encode(self, data:str) -> bytes:
         """
@@ -40,12 +40,13 @@ class McString:
         length_bytes = McVarInt(data_content=len(utf8_bytes)).bytes_content
         return length_bytes + utf8_bytes
     
-    def data_decode(self, data:bytes) -> str:
+    def data_decode(self, data:bytes) -> tuple[str, int]:
         """
         Decode a Minecraft VarInt-prefixed UTF-8 string.
         Returns (string, total_bytes_consumed)
         """
         # 解码 VarInt 长度前缀
+        # length -> value
         length, length_size = McVarInt(bytes_content=data).decode_varint_with_size()
         str_bytes = data[length_size:length_size + length]
         s = str_bytes.decode('utf-8')
