@@ -14,7 +14,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from mc_fixed_points import *
-from mc_string import *
-from mc_varint_and_varlong import *
-from mc_position import *
+from .mc_fixed_points import McFixedPoints
+
+from .mc_varint import McVarInt
+from .mc_varlong import McVarLong
+
+from .mc_string import McString
+from .mc_string_array import McStringArray
+
+from .mc_position import McPosition
+
+from .mc_identifier import McIdentifier
+
