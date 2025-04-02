@@ -38,7 +38,7 @@ This project is currently under development and is **not ready for production us
 ## Installation
 
 ```bash
-pip install minecraft-protocol-python
+pip install minecraft-protocol-python (not ready yet)
 ```
 
 ## Usage Example
