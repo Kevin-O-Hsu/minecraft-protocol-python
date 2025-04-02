@@ -1,7 +1,7 @@
 
 # Minecraft Protocol Python
 
-[![Discord](https://img.shields.io/discord/338512177474962178.svg)](https://discord.gg/FkyNrjgpm5)  
+[![Discord](https://img.shields.io/badge/chat-discord-blue)](https://discord.gg/FkyNrjgpm5)  
 
 ## Overview
 
