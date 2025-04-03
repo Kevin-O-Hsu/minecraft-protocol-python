@@ -31,7 +31,9 @@ class McIdentifier(McDataStruct):
         data_content: (namespace, value)
         """
         if bool(bytes_content) + bool(data_content) != 1:
-            raise ValueError("You must provide exactly one of bytes_content or data_content.")
+            raise ValueError(
+                "You must provide exactly one of bytes_content or data_content."
+            )
 
         if data_content:
             namespace, value = data_content

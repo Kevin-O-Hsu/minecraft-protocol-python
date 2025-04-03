@@ -11,23 +11,22 @@ class TestMcIdentifier(unittest.TestCase):
         # 将字节转成 hex string 输出用于调试
         hex_str = obj.bytes_content.hex()
         print(obj.bytes_content)  # 原始 bytes
-        print(hex_str)            # 十六进制
+        print(hex_str)  # 十六进制
 
         # UTF-8编码后的 "minecraft:stone"
         expected_suffix = "6d696e6563726166743a73746f6e65"
         self.assertTrue(hex_str.endswith(expected_suffix))
         self.assertEqual(obj.data_content, identifier)
 
-
     def test_decode_identifier(self):
-        raw = b'\x10minecraft:stone'
+        raw = b"\x10minecraft:stone"
         obj = McIdentifier(bytes_content=raw)
         self.assertEqual(obj.data_content, ("minecraft", "stone"))
         self.assertEqual(obj.bytes_content, raw)
 
     def test_invalid_both_inputs(self):
         with self.assertRaises(ValueError) as cm:
-            McIdentifier(bytes_content=b'\x01', data_content=("abc", "def"))
+            McIdentifier(bytes_content=b"\x01", data_content=("abc", "def"))
         self.assertIn("provide exactly one", str(cm.exception))
 
     def test_invalid_both_empty(self):
@@ -48,4 +47,3 @@ class TestMcIdentifier(unittest.TestCase):
         obj = McIdentifier(data_content=("my_mod", "block/type_1"))
         re_encoded = McIdentifier(bytes_content=obj.bytes_content)
         self.assertEqual(re_encoded.data_content, ("my_mod", "block/type_1"))
-

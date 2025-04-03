@@ -19,7 +19,6 @@ from .datastruck import McDataStruct
 
 
 class McVarInt(McDataStruct):
-
     def __init__(
         self, *, bytes_content: bytes = bytes(), data_content: int = None
     ) -> None:
@@ -33,9 +32,15 @@ class McVarInt(McDataStruct):
         thus, VarInts are effectively little endian (however, groups are 7 bits, not 8).
         """
         # Ensure that at least one of bytes_content or data_content is provided
-        assert (bytes_content != b"") or (
-            data_content is not None
-        ), "Either bytes_content or data_content must be provided."
+        if data_content == 0:
+            if bool(bytes_content):
+                raise ValueError(
+                    "You must provide exactly one of bytes_content or data_content."
+                )
+        elif bool(bytes_content) + bool(data_content) != 1:
+            raise ValueError(
+                "You must provide exactly one of bytes_content or data_content."
+            )
 
         self.bytes_content = bytes_content
         self.data_content = data_content
@@ -47,28 +52,41 @@ class McVarInt(McDataStruct):
 
     def data_encode(self, data: int) -> bytes:
         """Encodes an integer to Minecraft VarInt format (max 5 bytes)."""
+
+        # Minecraft VarInt 支持的范围是 int32 (即 -2147483648 到 2147483647)
+        if data < -2147483648 or data > 2147483647:
+            raise ValueError("VarInt is too big (more than 5 bytes)")
+
+        if data < 0:
+            data += 1 << 32  # Unsigned int32
+
         result = bytearray()
         for _ in range(5):
-            temp = data & 0x7F  # Get the lowest 7 bits
-            data >>= 7
-            if data != 0:
-                result.append(temp | 0x80)  # Set continuation bit
+            temp = data & 0x7F  # 取最低7位
+            data >>= 7  # 右移7位
+
+            if data != 0:  # 如果还有更多数据
+                result.append(temp | 0x80)  # 设置继续位为1
             else:
                 result.append(temp)
                 return bytes(result)
-        raise ValueError("VarInt is too big (more than 5 bytes)")
 
     def data_decode(self, data: bytes) -> int:
         """Decodes a Minecraft VarInt from bytes."""
         result = 0
         shift = 0
-        for byte in data:
+        for i, byte in enumerate(data):
             result |= (byte & 0x7F) << shift
-            if (byte & 0x80) == 0:  # If the continuation bit is 0, we're done
+            if (byte & 0x80) == 0:  # continuation bit = 0, we're done
                 break
             shift += 7
         else:
             raise ValueError("VarInt is too big (more than 5 bytes)")
+
+        # ✔ 添加符号扩展判断（Minecraft 的 VarInt 是 int32）
+        if result >= 1 << 31:
+            result -= 1 << 32
+
         return result
 
     def decode_varint_with_size(self) -> tuple[int, int]:
