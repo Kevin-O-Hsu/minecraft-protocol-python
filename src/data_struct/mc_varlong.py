@@ -20,6 +20,15 @@ from .datastruck import McDataStruct
 class McVarLong(McDataStruct):
     
     def __init__(self, *,  bytes_content:bytes = bytes(), data_content:int = None) -> None:
+        """
+        VarLongs are never longer than 10 bytes.
+        Variable-length format such that smaller numbers use fewer bytes. 
+        These are very similar to Protocol Buffer Varints: 
+        the 7 least significant bits are used to encode the value and the most significant bit indicates whether there's another byte after it for the next part of the number. 
+        The least significant group is written first, 
+        followed by each of the more significant groups; 
+        thus, VarInts are effectively little endian (however, groups are 7 bits, not 8).
+        """
         # Ensure that at least one of bytes_content or data_content is provided
         assert ((bytes_content != b"") or (data_content is not None)), "Either bytes_content or data_content must be provided."
         

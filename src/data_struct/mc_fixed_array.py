@@ -17,49 +17,45 @@
 
 from .datastruck import McDataStruct
 from .mc_varint import McVarInt
-import re
+from .mc_array import McArray
 
 
-class McIdentifier(McDataStruct):
+class McFixedArray(McDataStruct):
     
-    def __init__(self, *,  bytes_content:bytes=bytes(), data_content:tuple[str, str]=tuple()) -> None:
+    def __init__(self, *,  bytes_content: bytes = bytes(), data_content: tuple[McVarInt, McArray] = None) -> None:
         """
-        data_content: (namespace, value)
+        data_content: (length: McVarInt, data: McArray)
+        Represents an array prefixed by its length. If the array is empty the length will still be encoded.
         """
-        # data_content: (namespace, value)
-        
         assert True in [bool(item) for item in (bytes_content, data_content)]\
             , "Either bytes_content or data_content must be provided"
-        if bool(data_content):
-            assert bool(re.fullmatch("[a-z0-9.-_]", data_content[0]))
-            assert bool(re.fullmatch("[a-z0-9.-_/]"), data_content[1])
+        
         
         self.bytes_content = bytes_content
         self.data_content = data_content
-        
-        if self.bytes_content == bytes():
+
+        if ((self.bytes_content == bytes()) and (self.data_content is not None)):
             self.bytes_content = self.data_encode(self.data_content)
-        elif self.data_content == tuple():
+        elif self.data_content is None:
             self.data_content = self.data_decode(self.bytes_content)
-
-    def data_encode(self, data:tuple[str, str]) -> bytes:
+    
+    def data_encode(self, data: tuple[McVarInt, McArray]) -> bytes:
         """
-        Encode the Identifier as a Minecraft VarInt-prefixed UTF-8 string.
+        Encode a prefixed array: [VarInt(length) + array bytes]
         """
-        # Format: namespace:value
-        namespace = data[0]
-        value = data[1]
-        
-        full_string = f"{namespace}:{value}"
-        utf8_bytes = full_string.encode("utf-8")
-        length_bytes = McVarInt(data_content=len(utf8_bytes)).bytes_content
-        return length_bytes + utf8_bytes
-
-    def data_decode(self, data: bytes) -> str:
+        length_bytes = data[0].bytes_content  # McVarInt
+        array_bytes = data[1].bytes_content  # McArray
+        return length_bytes + array_bytes
+    
+    def data_decode(self, data: bytes) -> tuple[McVarInt, McArray]:
         """
-        Decode a Minecraft VarInt-prefixed UTF-8 string back into an Identifier (namespace:value).
+        Decode a prefixed array from bytes.
         """
+        # 解码前缀长度
         length, length_size = McVarInt(bytes_content=data).decode_varint_with_size()
-        str_bytes = data[length_size:length_size + length]
-        decoded_string = str_bytes.decode('utf-8')
-        return decoded_string, length_size + length
+
+        # 解码数组内容
+        array_bytes = data[length_size:]
+        array = McArray(bytes_content=array_bytes, count=length)
+
+        return McVarInt(data_content=length), array

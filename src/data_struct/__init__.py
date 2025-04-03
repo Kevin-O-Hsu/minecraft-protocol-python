@@ -20,7 +20,7 @@ from .mc_varint import McVarInt
 from .mc_varlong import McVarLong
 
 from .mc_string import McString
-from .mc_string_array import McStringArray
+from .mc_array import McArray
 
 from .mc_position import McPosition
 
