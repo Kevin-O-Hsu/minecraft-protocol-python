@@ -15,38 +15,38 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-from abc import ABC, abstractmethod
+from .datastruck import McDataStruct
 
 
-class McDataStruct(ABC):
+class McBoolean(McDataStruct):
 
     def __init__(
-        self, *, bytes_content: bytes = bytes(), data_content: tuple = tuple()
+        self, *, bytes_content: bytes = bytes(), data_content: bool = None
     ) -> None:
-        # 防御性编程逻辑：必须且只能提供一个参数
-        if bool(bytes_content) + bool(data_content) != 1:
-            raise ValueError(
-                "You must provide exactly one of bytes_content or data_content."
-            )
+        assert (
+            bytes_content or data_content is not None
+        ), "Either bytes_content or data_content must be provided."
+        assert isinstance(data_content, bool), "data_content must be a boolean."
 
         self.bytes_content = bytes_content
         self.data_content = data_content
 
-        if not self.bytes_content:
+        if self.bytes_content == bytes():
             self.bytes_content = self.data_encode(self.data_content)
-        else:
+        elif self.data_content is None:
             self.data_content = self.data_decode(self.bytes_content)
 
-    @abstractmethod
-    def data_decode(self, bytes_content: bytes) -> tuple:
+    def data_encode(self, data: bool) -> bytes:
         """
-        Override this method to convert bytes_content to data_content
+        Encode a boolean value into 1 byte:
+        True -> 0x01, False -> 0x00
         """
-        pass
+        return b"\x01" if data else b"\x00"
 
-    @abstractmethod
-    def data_encode(self, data_content: tuple) -> bytes:
+    def data_decode(self, data: bytes) -> bool:
         """
-        Override this method to convert data_content to bytes_content
+        Decode a 1-byte boolean from bytes.
         """
-        pass
+        if len(data) != 1:
+            raise ValueError("Boolean must be exactly 1 byte")
+        return data[0] != 0

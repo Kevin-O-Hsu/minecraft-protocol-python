@@ -13,18 +13,3 @@
 
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-
-from .datastruck import McDataStruct
-
-from .mc_fixed_points import McFixedPoints
-
-from .mc_varint import McVarInt
-from .mc_varlong import McVarLong
-
-from .mc_string import McString
-from .mc_array import McArray
-
-from .mc_position import McPosition
-
-from .mc_identifier import McIdentifier

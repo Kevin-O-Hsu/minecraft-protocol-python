@@ -21,24 +21,29 @@ from .mc_array import McArray
 
 
 class McFixedArray(McDataStruct):
-    
-    def __init__(self, *,  bytes_content: bytes = bytes(), data_content: tuple[McVarInt, McArray] = None) -> None:
+
+    def __init__(
+        self,
+        *,
+        bytes_content: bytes = bytes(),
+        data_content: tuple[McVarInt, McArray] = None
+    ) -> None:
         """
         data_content: (length: McVarInt, data: McArray)
         Represents an array prefixed by its length. If the array is empty the length will still be encoded.
         """
-        assert True in [bool(item) for item in (bytes_content, data_content)]\
-            , "Either bytes_content or data_content must be provided"
-        
-        
+        assert True in [
+            bool(item) for item in (bytes_content, data_content)
+        ], "Either bytes_content or data_content must be provided"
+
         self.bytes_content = bytes_content
         self.data_content = data_content
 
-        if ((self.bytes_content == bytes()) and (self.data_content is not None)):
+        if (self.bytes_content == bytes()) and (self.data_content is not None):
             self.bytes_content = self.data_encode(self.data_content)
         elif self.data_content is None:
             self.data_content = self.data_decode(self.bytes_content)
-    
+
     def data_encode(self, data: tuple[McVarInt, McArray]) -> bytes:
         """
         Encode a prefixed array: [VarInt(length) + array bytes]
@@ -46,7 +51,7 @@ class McFixedArray(McDataStruct):
         length_bytes = data[0].bytes_content  # McVarInt
         array_bytes = data[1].bytes_content  # McArray
         return length_bytes + array_bytes
-    
+
     def data_decode(self, data: bytes) -> tuple[McVarInt, McArray]:
         """
         Decode a prefixed array from bytes.

@@ -18,36 +18,43 @@
 from .mc_string import McString
 from .datastruck import McDataStruct
 
+
 class McArray(McDataStruct):
-    
-    def __init__(self, *,  bytes_content:bytes=bytes(), data_content:list=list(), count:int=None) -> None:
+
+    def __init__(
+        self,
+        *,
+        bytes_content: bytes = bytes(),
+        data_content: list = list(),
+        count: int = None
+    ) -> None:
         """
-        Represents a list where the length is not encoded. 
-        The length must be known from the context. 
+        Represents a list where the length is not encoded.
+        The length must be known from the context.
         If the array is empty nothing will be encoded.
         """
-        assert True in [bool(item) for item in (bytes_content, data_content)]\
-            , "Either bytes_content or data_content must be provided"
-        
-        
+        assert True in [
+            bool(item) for item in (bytes_content, data_content)
+        ], "Either bytes_content or data_content must be provided"
+
         self.bytes_content = bytes_content
         self.data_content = data_content
         self.count = count
-        
+
         if self.bytes_content == bytes():
             self.bytes_content = self.data_encode(self.data_content)
-        elif ((self.data_content == list()) and (self.count is not None)):
+        elif (self.data_content == list()) and (self.count is not None):
             self.data_content = self.data_decode(self.bytes_content, self.count)
-    
-    def data_encode(self, data:list) -> bytes:
+
+    def data_encode(self, data: list) -> bytes:
         """
         Encode a list of strings as a Minecraft-style string array.
         Each string is encoded as [VarInt(length) + UTF-8 bytes].
         No array length is included — must be known by context.
         """
-        return b''.join(McString(data_content=s).bytes_content for s in data)
-    
-    def data_decode(self, data: bytes, count:int) -> list[str]:
+        return b"".join(McString(data_content=s).bytes_content for s in data)
+
+    def data_decode(self, data: bytes, count: int) -> list[str]:
         """
         Decode a Minecraft-style string array from bytes, given the known string count.
         Returns a list of strings.
